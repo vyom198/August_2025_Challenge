@@ -29,10 +29,12 @@ class ThermometerViewModel : ViewModel() {
         )
     private fun getData (){
         viewModelScope.launch {
+
             _state.update {
                 it.copy(
                     tempFlow = initialTempFlow,
-                    isCompleted = false
+                    isCompleted = false,
+                    size = 0
                 )
             }
          temps.collect { temp->
