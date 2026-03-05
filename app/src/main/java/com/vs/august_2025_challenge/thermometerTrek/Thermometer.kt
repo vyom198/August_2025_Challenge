@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
@@ -196,39 +198,73 @@ fun ThermometerScreen(
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    LazyHorizontalGrid(
-                        rows = GridCells.Fixed(10),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                    Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier.height(254.dp).width(312.dp),
-                        userScrollEnabled = false
-
                     ) {
+                        Column {
+                             state.tempFlow.take(10).forEach { temp ->
+                                 Row(
+                                     modifier = Modifier.height(25.dp).width(153.dp),
+                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                     verticalAlignment = Alignment.CenterVertically
 
-                        items(state.tempFlow){ temp ->
-                            Row(
-                                modifier = Modifier.height(24.dp).width(153.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                 ) {
+                                     Icon(
+                                         painter = painterResource(id = R.drawable.thermometer_02),
+                                         contentDescription = null,
+                                         modifier = Modifier
+                                             .size(20.dp),// Give icon a fixed size
+                                         tint = if (temp != null) Primary else TextDisabled
+                                     )
+                                     Text(
+                                         text = if (temp != null) "$temp °F" else "",
+                                         modifier = Modifier.align(Alignment.CenterVertically)
+                                             .weight(1f)  // Allow text to take remaining space
+                                             .clipToBounds()  // Ensure text doesn't get clipped incorrectly
+                                             .wrapContentHeight(),
+                                         style = MaterialTheme.typography.normal.copy(
+                                             fontSize = 17.sp,
+                                             lineHeight = 20.sp,
+                                             fontWeight = FontWeight.Medium
+                                         ),
+                                         color = TextPrimary
+                                     )
 
-                            ) {
-                               Icon(
-                                   painter = painterResource(id = R.drawable.thermometer_02),
-                                   contentDescription = null,
-                                   modifier = Modifier.align(Alignment.CenterVertically),
-                                   tint = if(temp != null) Primary else TextDisabled
-                               )
-                                Text(
-                                    text = if(temp != null) "$temp °F" else "",
-                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                    style = MaterialTheme.typography.normal.copy(
-                                        fontSize = 17.sp,
-                                        lineHeight = 20.sp,
-                                        fontWeight = FontWeight.Medium
-                                    ),
-                                    color = TextPrimary
-                                )
+                                 }
+                             }
 
+                        }
+                        Column {
+                            state.tempFlow.drop(10).forEach { temp ->
+                                Row(
+                                    modifier = Modifier.height(25.dp).width(153.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.thermometer_02),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp),// Give icon a fixed size
+                                        tint = if (temp != null) Primary else TextDisabled
+                                    )
+                                    Text(
+                                        text = if (temp != null) "$temp °F" else "",
+                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                            .weight(1f)  // Allow text to take remaining space
+                                            .clipToBounds()  // Ensure text doesn't get clipped incorrectly
+                                            .wrapContentHeight(),
+                                        style = MaterialTheme.typography.normal.copy(
+                                            fontSize = 17.sp,
+                                            lineHeight = 20.sp,
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                        color = TextPrimary
+                                    )
+
+                                }
                             }
 
                         }
